@@ -5,7 +5,9 @@ use clap::Parser;
 
 use crate::base64::{Base64Input, Base64Output};
 
-#[derive(clap::Parser, Debug)]
+/// Try to make an tool sets for daily develop.
+#[derive(Parser, Debug)]
+#[clap(version = "0.1", author = "Luckychacha <luckychachaa@gmail.com>")]
 struct Args {
     #[command(subcommand)]
     action: Action,
@@ -13,8 +15,10 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Action {
-    Base64Decode { input: String },
+    /// Try to generate a base64 encoded string. Such as "my-dev-tools base64-encode 'hello world!'"
     Base64Encode { input: String },
+    /// Parse a base64 encoded string. Such as "my-dev-tools base64-decode 'aGVsbG8gd29ybGQh'"
+    Base64Decode { input: String },
 }
 fn main() {
     let args = Args::parse();
