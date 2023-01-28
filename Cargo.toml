@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 base64 = "0.21.0"
-clap = { version = "4.1.4", features = ["derive"] }
+clap = { version = "4.1.4", features = ["derive", "cargo"] }
 thiserror = "1.0.38"
