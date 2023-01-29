@@ -1,3 +1,3 @@
 # My Dev Tools
 
-Try to make an tool sets for daily develop.
+Try to make a tool sets for daily develop.

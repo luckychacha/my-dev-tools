@@ -13,16 +13,21 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Action {
-    /// Try to generate a base64 encoded string. Such as "my-dev-tools base64-encode 'hello world!'"
     Base64Encode { input: String },
-    /// Parse a base64 encoded string. Such as "my-dev-tools base64-decode 'aGVsbG8gd29ybGQh'"
     Base64Decode { input: String },
 }
 fn main() {
-    let matches = Command::new("my-dev-tools")
+    let app = Command::new("my-dev-tools")
         .author("luckychacha")
         .version("0.1.0")
-        .about("Try to make an tool sets for daily develop.")
+//         .help_template("\
+// {before-help}{name} {version}
+// {author-with-newline}{about-with-newline}
+// {usage-heading} {usage}
+
+// {all-args}{after-help}
+// ")      
+        .about("Try to make a tool sets for daily develop.")
         .subcommand(
             Command::new("Base64Encode")
                 .about("Try to generate a base64 encoded string. Such as \"my-dev-tools base64-encode 'hello world!'\"")
@@ -32,8 +37,8 @@ fn main() {
             Command::new("Base64Decode")
                 .about("Parse a base64 encoded string. Such as \"my-dev-tools base64-decode 'aGVsbG8gd29ybGQh'\"")
                 .arg(Arg::new("input")),
-        )
-        .get_matches();
+        ).arg_required_else_help(true);
+    let matches = app.get_matches();
 
     if let Some(matches) = matches.subcommand_matches("Base64Encode") {
         if let Some(s) = matches.get_one::<String>("input") {
