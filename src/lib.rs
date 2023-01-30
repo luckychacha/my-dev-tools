@@ -20,7 +20,7 @@ enum Action {
 pub fn command_parse() {
     let matches = Command::new("my-dev-tools")
         .add_basic_info()
-        .add_subcommands()
+        .add_base64_subcommands()
         .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("base64-encode") {
@@ -46,7 +46,7 @@ pub fn command_parse() {
 
 pub trait CommandExt {
     fn add_basic_info(self) -> Self;
-    fn add_subcommands(self) -> Self;
+    fn add_base64_subcommands(self) -> Self;
 }
 
 impl CommandExt for Command {
@@ -63,7 +63,7 @@ impl CommandExt for Command {
             .arg_required_else_help(true)
     }
 
-    fn add_subcommands(self) -> Self {
+    fn add_base64_subcommands(self) -> Self {
         self.subcommand(
             Command::new("base64-encode")
                 .about("Try to generate a base64 encoded string. Such as \"my-dev-tools base64-encode 'hello world!'\"")
