@@ -3,8 +3,6 @@ pub mod error;
 
 use clap::{command, Arg, ArgMatches, Command, Parser};
 
-use crate::base64::{Base64Input, Base64Output};
-
 #[derive(Parser, Debug)]
 struct Args {
     #[command(subcommand)]
@@ -23,48 +21,28 @@ pub fn command_parse() {
         .add_base64_subcommands()
         .get_matches();
 
-    matches.exec();
+    let my_matches = MyArgMatches(matches);
+    my_matches.exec();
+}
+
+pub trait SubCommandExt {
+    fn exec(self);
+}
+
+pub struct MyArgMatches(ArgMatches);
+
+impl SubCommandExt for MyArgMatches {
+    fn exec(self) {
+        match self.0.subcommand_name() {
+            Some("base64-encode") | Some("base64-decode") => self.base64_tools(),
+            _ => {}
+        }
+    }
 }
 
 pub trait CommandExt {
     fn add_basic_info(self) -> Self;
     fn add_base64_subcommands(self) -> Self;
-}
-
-pub trait SubCommandExt {
-    fn exec(self);
-    fn base64_tools(self);
-}
-
-impl SubCommandExt for ArgMatches {
-    fn exec(self) {
-        match self.subcommand_name() {
-            Some("base64-encode") | Some("base64-decode") => self.base64_tools(),
-            _ => {}
-        }
-    }
-
-    fn base64_tools(self) {
-        if let Some(matches) = self.subcommand_matches("base64-encode") {
-            if let Some(s) = matches.get_one::<String>("input") {
-                if let Ok(base64_encoded) = s.as_str().parse::<Base64Output>() {
-                    println!("{base64_encoded}");
-                }
-            }
-        } else if let Some(matches) = self.subcommand_matches("base64-decode") {
-            if let Some(s) = matches.get_one::<String>("input") {
-                let result = s.as_str().parse::<Base64Input>();
-                match result {
-                    Ok(base64_decoded) => {
-                        println!("{base64_decoded}")
-                    }
-                    Err(error) => {
-                        println!("Parse input error: {error:?}")
-                    }
-                }
-            }
-        }
-    }
 }
 
 impl CommandExt for Command {

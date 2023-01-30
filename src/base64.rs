@@ -2,7 +2,7 @@ use std::{fmt::Display, str::FromStr};
 
 use base64::{engine::general_purpose, Engine};
 
-use crate::error::ToolErrors;
+use crate::{error::ToolErrors, MyArgMatches};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Base64Input {
@@ -77,6 +77,30 @@ impl FromStr for Base64Output {
         let mut buf = String::new();
         general_purpose::STANDARD.encode_string(s, &mut buf);
         Ok(Base64Output::new(s, buf))
+    }
+}
+
+impl MyArgMatches {
+    pub fn base64_tools(self) {
+        if let Some(matches) = self.0.subcommand_matches("base64-encode") {
+            if let Some(s) = matches.get_one::<String>("input") {
+                if let Ok(base64_encoded) = s.as_str().parse::<Base64Output>() {
+                    println!("{base64_encoded}");
+                }
+            }
+        } else if let Some(matches) = self.0.subcommand_matches("base64-decode") {
+            if let Some(s) = matches.get_one::<String>("input") {
+                let result = s.as_str().parse::<Base64Input>();
+                match result {
+                    Ok(base64_decoded) => {
+                        println!("{base64_decoded}")
+                    }
+                    Err(error) => {
+                        println!("Base64 Parse input error: {error:?}. Input: \"{s}\"");
+                    }
+                }
+            }
+        }
     }
 }
 
