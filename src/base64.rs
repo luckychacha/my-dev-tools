@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 use base64::{engine::general_purpose, Engine};
 
@@ -33,6 +33,18 @@ impl FromStr for Base64Input {
     }
 }
 
+impl Display for Base64Input {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Input: {}\r\nBase64 encoded: \"{}\"",
+            self.base64_encoded,
+            self.translate_into_human_readable_content()
+                .unwrap_or(String::from("Bytes convert to string error."))
+        )
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Base64Output {
     pub raw: String,
@@ -45,6 +57,16 @@ impl Base64Output {
             raw: String::from(input),
             base64_encoded,
         }
+    }
+}
+
+impl Display for Base64Output {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Input: {}\r\nBase64 encoded: \"{}\"",
+            self.raw, self.base64_encoded
+        )
     }
 }
 

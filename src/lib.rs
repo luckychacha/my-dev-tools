@@ -19,55 +19,60 @@ enum Action {
 
 pub fn command_parse() {
     let matches = Command::new("my-dev-tools")
-        .author("luckychacha")
-        .version("0.1.0")
-//         .help_template("\
-// {before-help}{name} {version}
-// {author-with-newline}{about-with-newline}
-// {usage-heading} {usage}
-
-// {all-args}{after-help}
-// ")      
-        .about("Try to make a tool sets for daily develop.")
-        .subcommand(
-            Command::new("Base64Encode")
-                .about("Try to generate a base64 encoded string. Such as \"my-dev-tools base64-encode 'hello world!'\"")
-                .arg(Arg::new("input")),
-        )
-        .subcommand(
-            Command::new("Base64Decode")
-                .about("Parse a base64 encoded string. Such as \"my-dev-tools base64-decode 'aGVsbG8gd29ybGQh'\"")
-                .arg(Arg::new("input")),
-        )
-        .arg_required_else_help(true)
+        .add_basic_info()
+        .add_subcommands()
         .get_matches();
 
-    if let Some(matches) = matches.subcommand_matches("Base64Encode") {
+    if let Some(matches) = matches.subcommand_matches("base64-encode") {
         if let Some(s) = matches.get_one::<String>("input") {
             if let Ok(base64_encoded) = s.as_str().parse::<Base64Output>() {
-                println!("Input is: {}", base64_encoded.raw);
-                println!(
-                    "Base64 encode result is: \"{}\"",
-                    base64_encoded.base64_encoded
-                );
+                println!("{base64_encoded}");
             }
         }
-    } else if let Some(matches) = matches.subcommand_matches("Base64Decode") {
+    } else if let Some(matches) = matches.subcommand_matches("base64-decode") {
         if let Some(s) = matches.get_one::<String>("input") {
             let result = s.as_str().parse::<Base64Input>();
             match result {
                 Ok(base64_decoded) => {
-                    println!(
-                        "Base64 decode result is: {}",
-                        base64_decoded
-                            .translate_into_human_readable_content()
-                            .unwrap_or(String::from("Bytes convert to string error."))
-                    )
+                    println!("{base64_decoded}")
                 }
                 Err(error) => {
                     println!("Parse input error: {error:?}")
                 }
             }
         }
+    }
+}
+
+pub trait CommandExt {
+    fn add_basic_info(self) -> Self;
+    fn add_subcommands(self) -> Self;
+}
+
+impl CommandExt for Command {
+    fn add_basic_info(self) -> Self {
+        self.author("luckychacha")
+            .version("0.1.0")
+            //         .help_template("\
+            // {before-help}{name} {version}
+            // {author-with-newline}{about-with-newline}
+            // {usage-heading} {usage}
+            // {all-args}{after-help}
+            // ")
+            .about("Try to make a tool sets for daily develop.")
+            .arg_required_else_help(true)
+    }
+
+    fn add_subcommands(self) -> Self {
+        self.subcommand(
+            Command::new("base64-encode")
+                .about("Try to generate a base64 encoded string. Such as \"my-dev-tools base64-encode 'hello world!'\"")
+                .arg(Arg::new("input")),
+        )
+        .subcommand(
+            Command::new("base64-decode")
+                .about("Parse a base64 encoded string. Such as \"my-dev-tools base64-decode 'aGVsbG8gd29ybGQh'\"")
+                .arg(Arg::new("input")),
+        )
     }
 }
