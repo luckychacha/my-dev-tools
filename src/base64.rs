@@ -37,7 +37,7 @@ impl Display for Base64Input {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Input: {}\r\nBase64 encoded: \"{}\"",
+            "Input: {}\r\nBase64 Decoded: \"{}\"",
             self.base64_encoded,
             self.translate_into_human_readable_content()
                 .unwrap_or(String::from("Bytes convert to string error."))
