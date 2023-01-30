@@ -1,19 +1,8 @@
 pub mod base64;
 pub mod error;
-
-use clap::{command, Arg, ArgMatches, Command, Parser};
-
-#[derive(Parser, Debug)]
-struct Args {
-    #[command(subcommand)]
-    action: Action,
-}
-
-#[derive(clap::Subcommand, Debug)]
-enum Action {
-    Base64Encode { input: String },
-    Base64Decode { input: String },
-}
+pub mod types;
+use clap::{Arg, Command};
+use types::my_arg_matches::{MyArgMatches, SubCommandExt};
 
 pub fn command_parse() {
     let matches = Command::new("my-dev-tools")
@@ -23,21 +12,6 @@ pub fn command_parse() {
 
     let my_matches = MyArgMatches(matches);
     my_matches.exec();
-}
-
-pub trait SubCommandExt {
-    fn exec(self);
-}
-
-pub struct MyArgMatches(ArgMatches);
-
-impl SubCommandExt for MyArgMatches {
-    fn exec(self) {
-        match self.0.subcommand_name() {
-            Some("base64-encode") | Some("base64-decode") => self.base64_tools(),
-            _ => {}
-        }
-    }
 }
 
 pub trait CommandExt {

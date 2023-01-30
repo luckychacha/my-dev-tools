@@ -2,7 +2,7 @@ use std::{fmt::Display, str::FromStr};
 
 use base64::{engine::general_purpose, Engine};
 
-use crate::{error::ToolErrors, MyArgMatches};
+use crate::{error::ToolErrors, types::my_arg_matches::MyArgMatches};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Base64Input {
