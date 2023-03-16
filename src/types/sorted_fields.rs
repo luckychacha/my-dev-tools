@@ -24,7 +24,6 @@ pub trait SortedFields {
     }
 }
 
-// todo: add tests
 #[cfg(test)]
 mod test {
     use super::*;
