@@ -1,22 +1,26 @@
 use std::collections::HashMap;
-
 pub trait SortedFields {
     fn get_fields(&self, fields: &mut HashMap<String, String>);
 
-    fn sorted_fields(&self, token: &str) -> String {
+    fn sorted_fields(&self) -> String {
         let mut fields = HashMap::new();
         self.get_fields(&mut fields);
         let mut field_names = fields.keys().collect::<Vec<_>>();
         field_names.sort_unstable();
-        let mut query_string: String =
+        let query_string: String =
             field_names
                 .iter()
                 .fold(String::new(), |mut query_string: String, &key| {
                     query_string.push_str(&format!("{key}={}&", fields.get(key).unwrap()));
                     query_string
                 });
-        query_string.push_str(&format!("token={token}"));
         query_string
+    }
+
+    fn generate_md5_sign(&self, sign_key: &str, token_key: &str, token: &str) -> String {
+        let sorted_fields = self.sorted_fields();
+        let digest = md5::compute(sorted_fields + &format!("{token_key}={token}"));
+        format!("{sign_key}={digest:x}")
     }
 }
 
@@ -52,9 +56,22 @@ mod test {
             balance: 1000,
         };
 
+        assert_eq!(user.sorted_fields(), "age=20&balance=1000&id=1&name=test&");
+    }
+
+    #[test]
+    fn generate_md5_sign_should_work() {
+        let user = User {
+            id: 1,
+            name: "test".to_string(),
+            age: 20,
+            balance: 1000,
+        };
+
+        assert_eq!(user.sorted_fields(), "age=20&balance=1000&id=1&name=test&");
         assert_eq!(
-            user.sorted_fields("123"),
-            "age=20&balance=1000&id=1&name=test&token=123"
+            user.generate_md5_sign("sign", "token", "123"),
+            "sign=9746b373a2e410c31142a1c039dbfa29"
         );
     }
 }

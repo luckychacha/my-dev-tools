@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 base64 = "0.21.0"
 clap = { version = "4.1.4", features = ["derive", "cargo"] }
+md5 = "0.7.0"
 thiserror = "1.0.38"
