@@ -25,6 +25,8 @@ pub trait SortedFields {
 mod test {
     use super::*;
 
+    #[allow(dead_code)]
+    #[derive(Debug)]
     struct User {
         pub id: usize,
         pub name: String,
