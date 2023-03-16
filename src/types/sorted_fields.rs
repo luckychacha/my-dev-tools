@@ -12,7 +12,7 @@ pub trait SortedFields {
             field_names
                 .iter()
                 .fold(String::new(), |mut query_string: String, &key| {
-                    query_string.push_str(&format!("{key}={}", fields.get(key).unwrap()));
+                    query_string.push_str(&format!("{key}={}&", fields.get(key).unwrap()));
                     query_string
                 });
         query_string.push_str(&format!("token={}", token));
