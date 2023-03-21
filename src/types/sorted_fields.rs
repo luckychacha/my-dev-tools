@@ -6,18 +6,26 @@ pub trait SortedFields {
     fn get_fields(&self) -> Result<HashMap<String, String>, ToolErrors>;
 
     fn sorted_fields(&self) -> String {
-        let fields = self.get_fields().unwrap();
+        // let fields = self.get_fields().unwrap();
 
-        let mut field_names = fields.keys().collect::<Vec<_>>();
-        field_names.sort_unstable();
-        let query_string: String =
-            field_names
-                .iter()
-                .fold(String::new(), |mut query_string: String, &key| {
-                    query_string.push_str(&format!("{key}={}&", fields.get(key).unwrap()));
-                    query_string
-                });
-        query_string
+        // let mut field_names = fields.keys().collect::<Vec<_>>();
+        // field_names.sort_unstable();
+        // let query_string: String =
+        //     field_names
+        //         .iter()
+        //         .fold(String::new(), |mut query_string: String, &key| {
+        //             query_string.push_str(&format!("{key}={}&", fields.get(key).unwrap()));
+        //             query_string
+        //         });
+        // query_string
+        let mut tmp = self
+            .get_fields()
+            .unwrap()
+            .iter()
+            .map(|(key, value)| format!("{}={}&", key, value))
+            .collect::<Vec<String>>();
+        tmp.sort_unstable();
+        tmp.join("")
     }
 
     fn generate_md5_sign(&self, sign_key: &str, token_key: &str, token: &str) -> String {
@@ -30,7 +38,7 @@ pub trait SortedFields {
 #[cfg(test)]
 mod test {
     use super::*;
-    use serde_json::Value;
+    // use serde_json::Value;
 
     #[allow(dead_code)]
     #[derive(Debug)]
@@ -54,17 +62,19 @@ mod test {
 
     impl SortedFields for String {
         fn get_fields(&self) -> Result<HashMap<String, String>, ToolErrors> {
-            if let Ok(Value::Object(obj)) = serde_json::from_str(self) {
-                let res = obj
-                    .iter()
-                    .fold(HashMap::<String, String>::new(), |mut res, value| {
-                        res.insert(value.0.to_string(), value.1.to_string());
-                        res
-                    });
-                Ok(res)
-            } else {
-                Err(ToolErrors::ConvertJsonToHashMapError(self.clone()))
-            }
+            // if let Ok(Value::Object(obj)) = serde_json::from_str(self) {
+            //     let res = obj
+            //         .iter()
+            //         .fold(HashMap::<String, String>::new(), |mut res, value| {
+            //             res.insert(value.0.to_string(), value.1.to_string());
+            //             res
+            //         });
+            //     Ok(res)
+            // } else {
+            //     Err(ToolErrors::ConvertJsonToHashMapError(self.clone()))
+            // }
+            serde_json::from_str(self)
+                .map_err(|_| ToolErrors::ConvertJsonToHashMapError(self.clone()))
         }
     }
 
