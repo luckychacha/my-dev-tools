@@ -22,7 +22,7 @@ pub trait SortedFields {
             .get_fields()
             .unwrap()
             .iter()
-            .map(|(key, value)| format!("{}={}&", key, value))
+            .map(|(key, value)| format!("{key}={value}&"))
             .collect::<Vec<String>>();
         tmp.sort_unstable();
         tmp.join("")
