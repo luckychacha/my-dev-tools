@@ -1,11 +1,22 @@
 use std::collections::HashMap;
 
+use serde_json::Value;
+
 use crate::error::ToolErrors;
 
 pub trait SortedFields {
     fn get_fields(&self) -> Result<HashMap<String, String>, ToolErrors>;
 
     fn sorted_fields(&self) -> String {
+        // match self.get_fields() {
+        //     Ok(res) => {
+        //         println!("{res:?}");
+        //     }
+        //     Err(e) => {
+        //         println!("{e:?}")
+        //     }
+        // }
+        // "ok".to_string()
         // let fields = self.get_fields().unwrap();
 
         // let mut field_names = fields.keys().collect::<Vec<_>>();
@@ -35,6 +46,29 @@ pub trait SortedFields {
     }
 }
 
+impl SortedFields for String {
+    fn get_fields(&self) -> Result<HashMap<String, String>, ToolErrors> {
+        if let Ok(Value::Object(obj)) = serde_json::from_str(self) {
+            let res = obj
+                .iter()
+                .fold(HashMap::<String, String>::new(), |mut res, value| {
+                    res.insert(
+                        value.0.to_string(),
+                        match value.1 {
+                            Value::String(s) => s.to_string(),
+                            v => v.to_string(),
+                        },
+                    );
+                    res
+                });
+            Ok(res)
+        } else {
+            Err(ToolErrors::ConvertJsonToHashMapError(self.clone()))
+        }
+    }
+}
+// serde_json::from_str(self).map_err(|_| ToolErrors::ConvertJsonToHashMapError(self.clone()))
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -60,24 +94,6 @@ mod test {
         }
     }
 
-    impl SortedFields for String {
-        fn get_fields(&self) -> Result<HashMap<String, String>, ToolErrors> {
-            // if let Ok(Value::Object(obj)) = serde_json::from_str(self) {
-            //     let res = obj
-            //         .iter()
-            //         .fold(HashMap::<String, String>::new(), |mut res, value| {
-            //             res.insert(value.0.to_string(), value.1.to_string());
-            //             res
-            //         });
-            //     Ok(res)
-            // } else {
-            //     Err(ToolErrors::ConvertJsonToHashMapError(self.clone()))
-            // }
-            serde_json::from_str(self)
-                .map_err(|_| ToolErrors::ConvertJsonToHashMapError(self.clone()))
-        }
-    }
-
     #[test]
     fn sorted_fields_should_work() {
         let user = User {
@@ -92,7 +108,7 @@ mod test {
 
     #[test]
     fn test_sorted_fields() {
-        let json_str = r#"{"name": "John", "age": 30, "city": "New York}".to_string();
+        let json_str = r#"{"name": "John", "age": 30, "city": "New York"}"#.to_string();
 
         let expected_fields = vec![
             ("age".to_string(), "30".to_string()),
@@ -109,8 +125,7 @@ mod test {
 
     #[test]
     fn test_sorted_fields_invalid_json() {
-        let json_str = r#"{"name": "John", "age": 30, "city": "New York}"#
-            .to_string();
+        let json_str = r#"{"name": "John", "age": 30, "city": "New York}"#.to_string();
 
         let result = json_str.get_fields();
 

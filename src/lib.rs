@@ -11,6 +11,7 @@ pub fn command_parse() {
     let matches = Command::new("my-dev-tools")
         .add_basic_info()
         .add_base64_subcommands()
+        .add_sorted_fields_subcommands()
         .get_matches();
 
     let my_matches = MyArgMatches(matches);
