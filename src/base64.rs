@@ -2,10 +2,7 @@ use std::{fmt::Display, str::FromStr};
 
 use base64::{engine::general_purpose, Engine};
 
-use crate::{
-    error::ToolErrors,
-    types::{my_arg_matches::MyArgMatches, sorted_fields::SortedFields},
-};
+use crate::{error::ToolErrors, types::my_arg_matches::MyArgMatches};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Base64Input {
@@ -102,15 +99,6 @@ impl MyArgMatches {
                         println!("Base64 Parse input error: {error:?}. Input: \"{s}\"");
                     }
                 }
-            }
-        }
-    }
-
-    pub fn sorted_fields_tools(self) {
-        if let Some(matches) = self.0.subcommand_matches("json-to-sorted-kv-string") {
-            if let Some(s) = matches.get_one::<String>("input") {
-                println!("Got input json: {s}");
-                println!("sorted kv pairs string is: {}", s.sorted_fields());
             }
         }
     }

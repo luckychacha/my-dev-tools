@@ -40,5 +40,10 @@ impl CommandExt for Command {
                 .about("Try to convert a json string into a sorted kv pairs spiltted with &")
                 .arg(Arg::new("input")),
         )
+        .subcommand(
+            Command::new("generate-md5-sign")
+                .about("Generate MD5 Sign for input json str.")
+                .arg(Arg::new("input")),
+        )
     }
 }

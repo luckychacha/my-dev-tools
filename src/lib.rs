@@ -1,4 +1,6 @@
 pub mod base64;
+pub mod json_sorted;
+
 pub mod error;
 pub mod types;
 use clap::Command;
